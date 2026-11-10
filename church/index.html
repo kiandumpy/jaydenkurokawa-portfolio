@@ -1,1 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace Fellowship Church</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #8a6f2e;
+    --deep: #0d1117;
+    --dark: #141b24;
+    --card: #1a2332;
+    --card2: #1f2b3e;
+    --border: #2a3a52;
+    --text: #e8e0d0;
+    --muted: #8a9ab5;
+    --accent: #4a90d9;
+    --green: #4caf50;
+    --red: #e05252;
+    --purple: #9c6dd8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:var(--deep); color:var(--text); min-height:100vh; overflow-x:hidden; }
+  
+  /* ── scrollbar ── */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--dark); }
+  ::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:3px; }
+
+  /* ── OVERLAY / MODAL ── */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:999; backdrop-filter:blur(4px); }
+  .overlay.active { display:flex; align-items:center; justify-content:center; }
+  .modal { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:36px; width:min(460px,95vw); position:relative; animation:popIn .3s ease; }
+  @keyframes popIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal h2 { font-family:'Cinzel',serif; color:var(--gold); margin-bottom:4px; font-size:1.4rem; }
+  .modal .subtitle { color:var(--muted); font-size:.85rem; margin-bottom:24px; }
+  .modal .close-btn { position:absolute; top:14px; right:18px; background:none; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; line-height:1; }
+  .modal .close-btn:hover { color:var(--text); }
+  
+  /* forms */
+  label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:4px; letter-spacing:.05em; text-transform:uppercase; }
+  input, select, textarea { width:100%; background:var(--dark); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:10px 14px; font-family:'Nunito',sans-serif; font-size:.95rem; margin-bottom:16px; outline:none; transition:border .2s; }
+  input:focus, select:focus, textarea:focus { border-color:var(--gold); }
+  textarea { resize:vertical; min-height:80px; }
+  select option { background:var(--dark); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:8px; border:none; font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; transition:all .2s; }
+  .btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dim)); color:#1a1200; }
+  .btn-gold:hover { filter:brightness(1.12); transform:translateY(-1px); }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+  .btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+  .btn-danger { background:var(--red); color:#fff; }
+  .btn-danger:hover { filter:brightness(1.1); }
+  .btn-sm { padding:7px 14px; font-size:.82rem; }
+  .btn-full { width:100%; justify-content:center; margin-top:4px; }
+
+  /* ── NAV ── */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(13,17,23,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); height:64px; display:flex; align-items:center; padding:0 32px; gap:0; }
+  .nav-logo { font-family:'Cinzel',serif; color:var(--gold); font-size:1.15rem; letter-spacing:.08em; margin-right:auto; display:flex; align-items:center; gap:10px; }
+  .nav-logo svg { width:28px; height:28px; }
+  .nav-links { display:flex; gap:4px; }
+  .nav-link { background:none; border:none; color:var(--muted); font-family:'Nunito',sans-serif; font-size:.9rem; padding:8px 14px; border-radius:6px; cursor:pointer; transition:all .2s; }
+  .nav-link:hover, .nav-link.active { color:var(--gold); background:rgba(201,168,76,.08); }
+  .nav-actions { display:flex; gap:8px; margin-left:16px; }
+  .user-badge { display:flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.25); font-size:.85rem; color:var(--gold); }
+  .user-badge .role-tag { font-size:.7rem; background:var(--gold); color:#1a1200; padding:2px 7px; border-radius:10px; font-weight:700; text-transform:uppercase; }
+
+  /* ── HERO / PAGES ── */
+  .page { display:none; padding-top:64px; min-height:100vh; }
+  .page.active { display:block; }
+
+  /* HOME */
+  .hero { position:relative; min-height:calc(100vh - 64px); display:flex; align-items:center; justify-content:center; text-align:center; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 30%, rgba(201,168,76,.12) 0%, transparent 70%), radial-gradient(ellipse 50% 80% at 20% 80%, rgba(74,144,217,.06) 0%, transparent 60%), var(--deep); }
+  .hero-cross { position:absolute; top:50%; left:50%; transform:translate(-50%,-58%); width:320px; height:320px; opacity:.04; }
+  .hero-content { position:relative; z-index:1; max-width:700px; padding:40px 24px; animation:fadeUp .8s ease both; }
+  @keyframes fadeUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .hero-eyebrow { font-size:.8rem; letter-spacing:.25em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+  .hero h1 { font-family:'Cinzel',serif; font-size:clamp(2.2rem,6vw,4rem); font-weight:700; line-height:1.1; margin-bottom:16px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--gold),var(--gold-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero p { font-family:'Lora',serif; font-size:1.1rem; color:var(--muted); line-height:1.7; margin-bottom:32px; }
+  .hero-buttons { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .info-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; background:var(--border); border-top:1px solid var(--border); }
+  .info-card { background:var(--dark); padding:28px 24px; text-align:center; }
+  .info-card .icon { font-size:1.8rem; margin-bottom:10px; }
+  .info-card h3 { font-family:'Cinzel',serif; font-size:.95rem; color:var(--gold); margin-bottom:6px; }
+  .info-card p { font-size:.88rem; color:var(--muted); line-height:1.5; }
+  
+  /* section */
+  .section { padding:60px 32px; max-width:1100px; margin:0 auto; }
+  .section-title { font-family:'Cinzel',serif; font-size:1.6rem; color:var(--gold); margin-bottom:6px; }
+  .section-sub { color:var(--muted); font-size:.9rem; margin-bottom:32px; }
+  .divider { width:60px; height:2px; background:linear-gradient(90deg,var(--gold),transparent); margin:12px 0 32px; }
+
+  /* ── CALENDAR PAGE ── */
+  .calendar-grid { display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start; }
+  @media(max-width:800px) { .calendar-grid { grid-template-columns:1fr; } }
+  .cal-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .cal-header { display:flex; align-items:center; padding:20px 24px; border-bottom:1px solid var(--border); gap:12px; }
+  .cal-header h3 { font-family:'Cinzel',serif; color:var(--gold); flex:1; text-align:center; font-size:1.1rem; }
+  .cal-nav { background:none; border:1px solid var(--border); color:var(--text); width:34px; height:34px; border-radius:7px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+  .cal-nav:hover { border-color:var(--gold); color:var(--gold); }
+  .cal-days-header { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; padding:0 12px; }
+  .cal-day-name { font-size:.72rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; padding:10px 0; }
+  .cal-cells { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; padding:12px; }
+  .cal-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:.88rem; cursor:pointer; position:relative; transition:all .2s; }
+  .cal-cell:hover { background:rgba(201,168,76,.1); }
+  .cal-cell.other-month { color:var(--border); cursor:default; }
+  .cal-cell.other-month:hover { background:none; }
+  .cal-cell.today { background:rgba(201,168,76,.15); color:var(--gold); font-weight:700; }
+  .cal-cell.has-event::after { content:''; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--gold); }
+  .cal-cell.selected { background:var(--gold); color:#1a1200; font-weight:700; }
+  .cal-cell.selected::after { background:#1a1200; }
+  
+  /* event sidebar */
+  .events-panel { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
+  .events-panel h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:.95rem; margin-bottom:16px; }
+  .event-item { padding:12px; border-radius:10px; background:var(--card2); border-left:3px solid var(--gold); margin-bottom:10px; position:relative; }
+  .event-item .ev-time { font-size:.75rem; color:var(--muted); margin-bottom:4px; }
+  .event-item .ev-title { font-size:.9rem; font-weight:600; margin-bottom:3px; }
+  .event-item .ev-desc { font-size:.8rem; color:var(--muted); }
+  .event-item .ev-actions { display:flex; gap:6px; margin-top:8px; }
+  .badge { display:inline-block; font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+  .badge-gold { background:rgba(201,168,76,.2); color:var(--gold); }
+  .badge-blue { background:rgba(74,144,217,.2); color:var(--accent); }
+  .badge-green { background:rgba(76,175,80,.2); color:var(--green); }
+  .badge-purple { background:rgba(156,109,216,.2); color:var(--purple); }
+  .badge-red { background:rgba(224,82,82,.2); color:var(--red); }
+  .pending-badge { background:rgba(255,165,0,.18); color:orange; }
+  
+  /* ── PROGRAM PAGE ── */
+  .program-tabs { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+  .prog-tab { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px 18px; font-size:.87rem; cursor:pointer; transition:all .2s; }
+  .prog-tab.active { background:rgba(201,168,76,.15); border-color:var(--gold); color:var(--gold); }
+  .program-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:16px; }
+  .program-card .prog-header { background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); padding:20px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .program-card .prog-title { font-family:'Cinzel',serif; font-size:1.05rem; color:var(--gold); }
+  .program-card .prog-date { font-size:.82rem; color:var(--muted); }
+  .role-list { padding:0; }
+  .role-row { display:grid; grid-template-columns:180px 1fr auto; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid var(--border); }
+  .role-row:last-child { border-bottom:none; }
+  .role-name { font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .role-person { font-size:.95rem; font-weight:600; }
+  .role-actions { display:flex; gap:6px; }
+  @media(max-width:600px) { .role-row { grid-template-columns:1fr; gap:4px; } }
+
+  /* ── BIBLE TOPIC ── */
+  .bible-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .bible-card .week-label { font-size:.75rem; color:var(--gold); text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px; }
+  .bible-card h3 { font-family:'Cinzel',serif; font-size:1.25rem; margin-bottom:6px; }
+  .bible-card .verse-ref { font-size:.85rem; color:var(--accent); margin-bottom:14px; font-family:'Lora',serif; font-style:italic; }
+  .bible-card p { font-family:'Lora',serif; line-height:1.8; color:var(--muted); font-size:.95rem; }
+  .bible-card .speaker { display:flex; align-items:center; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+  .speaker-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-dim)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#1a1200; font-size:.9rem; }
+  .speaker-info .name { font-size:.9rem; font-weight:600; }
+  .speaker-info .title { font-size:.78rem; color:var(--muted); }
+
+  /* ── SONGS PAGE ── */
+  .songs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  .song-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; transition:all .2s; }
+  .song-card:hover { border-color:rgba(201,168,76,.35); transform:translateY(-2px); }
+  .song-card .song-num { font-size:.72rem; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.1em; }
+  .song-card h4 { font-family:'Cinzel',serif; font-size:1rem; margin-bottom:6px; }
+  .song-card .song-key { font-size:.8rem; color:var(--accent); margin-bottom:10px; }
+  .song-card .song-schedule { display:flex; align-items:center; gap:6px; font-size:.8rem; color:var(--muted); margin-bottom:8px; }
+  .song-card .song-actions { display:flex; gap:6px; margin-top:12px; }
+
+  /* ── ADMIN PANEL ── */
+  .admin-tabs { display:flex; gap:0; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:28px; flex-wrap:wrap; }
+  .admin-tab { flex:1; min-width:120px; background:var(--dark); border:none; color:var(--muted); padding:12px; cursor:pointer; font-family:'Nunito',sans-serif; font-size:.87rem; transition:all .2s; border-right:1px solid var(--border); }
+  .admin-tab:last-child { border-right:none; }
+  .admin-tab.active { background:rgba(201,168,76,.1); color:var(--gold); }
+  .admin-section { display:none; }
+  .admin-section.active { display:block; }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { background:var(--dark); padding:12px 16px; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); text-align:left; border-bottom:1px solid var(--border); }
+  .data-table td { padding:12px 16px; font-size:.9rem; border-bottom:1px solid rgba(42,58,82,.5); vertical-align:middle; }
+  .data-table tr:hover td { background:rgba(255,255,255,.02); }
+  .table-wrap { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; overflow-x:auto; }
+  
+  /* alerts / toasts */
+  #toast { position:fixed; bottom:28px; right:28px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 20px; font-size:.9rem; z-index:9999; transform:translateY(100px); opacity:0; transition:all .35s; max-width:320px; box-shadow:0 8px 32px rgba(0,0,0,.4); }
+  #toast.show { transform:translateY(0); opacity:1; }
+  #toast.success { border-left:3px solid var(--green); }
+  #toast.error { border-left:3px solid var(--red); }
+  #toast.info { border-left:3px solid var(--accent); }
+
+  /* misc */
+  .empty-state { text-align:center; padding:48px 24px; color:var(--muted); }
+  .empty-state .icon { font-size:2.5rem; margin-bottom:12px; }
+  .flex-between { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+  .chip { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; font-size:.78rem; background:rgba(255,255,255,.06); }
+  hr.sep { border:none; border-top:1px solid var(--border); margin:20px 0; }
+  .request-note { background:rgba(74,144,217,.07); border:1px solid rgba(74,144,217,.2); border-radius:10px; padding:12px 16px; font-size:.85rem; color:var(--accent); margin-bottom:20px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 40 40" fill="none">
+      <rect x="17" y="4" width="6" height="32" rx="2" fill="#c9a84c"/>
+      <rect x="8" y="14" width="24" height="6" rx="2" fill="#c9a84c"/>
+    </svg>
+    Grace Fellowship
+  </div>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-link active" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('calendar')">Calendar</button>
+    <button class="nav-link" onclick="showPage('program')">Program</button>
+    <button class="nav-link" onclick="showPage('bible')">Bible Topics</button>
+    <button class="nav-link" onclick="showPage('songs')">Songs</button>
+    <button class="nav-link" id="adminNavBtn" style="display:none" onclick="showPage('admin')">Admin</button>
+  </div>
+  <div class="nav-actions">
+    <div id="userBadge" style="display:none" class="user-badge">
+      <span id="userBadgeName"></span>
+      <span id="userBadgeRole" class="role-tag"></span>
+    </div>
+    <button class="btn btn-outline btn-sm" id="loginBtn" onclick="openLogin()">Sign In</button>
+    <button class="btn btn-danger btn-sm" id="logoutBtn" style="display:none" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════ PAGES ═══════════════════════════ -->
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <svg class="hero-cross" viewBox="0 0 200 200" fill="none">
+      <rect x="85" y="10" width="30" height="180" rx="6" fill="white"/>
+      <rect x="20" y="70" width="160" height="30" rx="6" fill="white"/>
+    </svg>
+    <div class="hero-content">
+      <div class="hero-eyebrow">✦ Welcome to Our Community ✦</div>
+      <h1>Chedikho Grace<br><span>Church</span></h1>
+      <p>A place of worship, community, and spiritual growth. Join us every Sunday as we gather to praise, learn, and serve together.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-gold" onclick="showPage('calendar')">📅 View Calendar</button>
+        <button class="btn btn-outline" onclick="showPage('bible')">📖 This Week's Message</button>
+      </div>
+    </div>
+  </div>
+  <div class="info-strip">
+    <div class="info-card"><div class="icon">🕊️</div><h3>Sunday Service</h3><p>Every Sunday at 9:00 AM & 11:00 AM</p></div>
+    <div class="info-card"><div class="icon">📍</div><h3>Location</h3><p>123 Faith Avenue, Grace City, GC 10001</p></div>
+    <div class="info-card"><div class="icon">🎵</div><h3>Worship</h3><p>Contemporary praise & traditional hymns</p></div>
+    <div class="info-card"><div class="icon">🤝</div><h3>Community</h3><p>Small groups & fellowship every Monday & Wednesday</p></div>
+  </div>
+  <div class="section">
+    <div class="section-title">This Week at a Glance</div>
+    <div class="divider"></div>
+    <div id="homeWeekSummary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;"></div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div class="page" id="page-calendar">
+  <div class="section">
+    <div class="flex-between">
+      <div>
+        <div class="section-title">Church Calendar</div>
+        <div class="divider"></div>
+        <p class="section-sub">All upcoming events and services</p>
+      </div>
+      <div id="calAddBtn" style="display:none">
+        <button class="btn btn-gold" onclick="openAddEvent()">+ Add Event</button>
+      </div>
+    </div>
+    <div id="userRequestBtn" style="display:none; margin-bottom:16px;">
+      <div class="request-note">💡 As a member, you can request events for admin approval.</div>
+      <button class="btn btn-outline" onclick="openRequestEvent()">📩 Request an Event</button>
+    </div>
+    <div class="calendar-grid">
+      <div>
+        <div class="cal-wrap">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="calNav(-1)">‹</button>
+            <h3 id="calMonthLabel"></h3>
+            <button class="cal-nav" onclick="calNav(1)">›</button>
+          </div>
+          <div class="cal-days-header" id="calDayNames"></div>
+          <div class="cal-cells" id="calCells"></div>
+        </div>
+      </div>
+      <div class="events-panel">
+        <h3 id="evPanelTitle">Upcoming Events</h3>
+        <div id="evPanelList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRAM -->
+<div class="page" id="page-program">
+  <div class="section">
+    <div class="flex-between">
+      <div>
+        <div class="section-title">Weekly Program</div>
+        <div class="divider"></div>
+        <p class="section-sub">Roles and assignments for each service</p>
+      </div>
+      <div id="progAddBtn" style="display:none">
+        <button class="btn btn-gold" onclick="openAddProgram()">+ New Program</button>
+      </div>
+    </div>
+    <div class="program-tabs" id="programTabs"></div>
+    <div id="programContent"></div>
+  </div>
+</div>
+
+<!-- BIBLE TOPICS -->
+<div class="page" id="page-bible">
+  <div class="section">
+    <div class="flex-between">
+      <div>
+        <div class="section-title">Weekly Bible Topics</div>
+        <div class="divider"></div>
+        <p class="section-sub">Messages and scripture studies</p>
+      </div>
+      <div id="bibleAddBtn" style="display:none">
+        <button class="btn btn-gold" onclick="openAddBible()">+ Add Topic</button>
+      </div>
+    </div>
+    <div id="bibleList"></div>
+  </div>
+</div>
+
+<!-- SONGS -->
+<div class="page" id="page-songs">
+  <div class="section">
+    <div class="flex-between">
+      <div>
+        <div class="section-title">Song List</div>
+        <div class="divider"></div>
+        <p class="section-sub">Scheduled worship songs with keys and times</p>
+      </div>
+      <div id="songAddBtn" style="display:none">
+        <button class="btn btn-gold" onclick="openAddSong()">+ Add Song</button>
+      </div>
+    </div>
+    <div class="songs-grid" id="songGrid"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="section">
+    <div class="section-title">Admin Dashboard</div>
+    <div class="divider"></div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdmin('events')">📅 Events</button>
+      <button class="admin-tab" onclick="switchAdmin('requests')">📩 Requests</button>
+      <button class="admin-tab" onclick="switchAdmin('programs')">📋 Programs</button>
+      <button class="admin-tab" onclick="switchAdmin('users')">👥 Members</button>
+    </div>
+
+    <div class="admin-section active" id="admin-events">
+      <div class="flex-between">
+        <h3 style="font-family:'Cinzel',serif;color:var(--gold)">All Events</h3>
+        <button class="btn btn-gold btn-sm" onclick="openAddEvent()">+ Add Event</button>
+      </div>
+      <div class="table-wrap"><table class="data-table" id="adminEventsTable">
+        <thead><tr><th>Date</th><th>Title</th><th>Time</th><th>Type</th><th>Actions</th></tr></thead>
+        <tbody id="adminEventsTbody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="admin-section" id="admin-requests">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:16px">Pending Event Requests</h3>
+      <div id="adminRequestsList"></div>
+    </div>
+
+    <div class="admin-section" id="admin-programs">
+      <div class="flex-between">
+        <h3 style="font-family:'Cinzel',serif;color:var(--gold)">Programs</h3>
+        <button class="btn btn-gold btn-sm" onclick="openAddProgram()">+ New Program</button>
+      </div>
+      <div id="adminProgramsList"></div>
+    </div>
+
+    <div class="admin-section" id="admin-users">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:16px">Registered Members</h3>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+        <tbody id="adminUsersTbody"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+
+<!-- LOGIN -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('loginOverlay')">×</button>
+    <h2>✦ Sign In</h2>
+    <p class="subtitle">Access your Grace Fellowship account</p>
+    <label>Email</label>
+    <input type="email" id="loginEmail" placeholder="your@email.com">
+    <label>Password</label>
+    <input type="password" id="loginPass" placeholder="••••••••">
+    <div id="loginError" style="color:var(--red);font-size:.83rem;margin-bottom:12px;display:none"></div>
+    <button class="btn btn-gold btn-full" onclick="doLogin()">Sign In</button>
+    <hr class="sep">
+    <p style="text-align:center;font-size:.83rem;color:var(--muted);margin-bottom:12px">Demo accounts:</p>
+    <div style="display:grid;gap:6px;">
+      <button class="btn btn-outline btn-sm" onclick="fillDemo('admin@grace.church','admin123')">👑 Admin Demo</button>
+      <button class="btn btn-outline btn-sm" onclick="fillDemo('user@grace.church','user123')">🙏 Member Demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT EVENT -->
+<div class="overlay" id="eventOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('eventOverlay')">×</button>
+    <h2 id="eventModalTitle">Add Event</h2>
+    <p class="subtitle" id="eventModalSub">Fill in the event details</p>
+    <input type="hidden" id="eventId">
+    <label>Event Title</label>
+    <input id="evTitle" placeholder="e.g. Sunday Morning Worship">
+    <div class="form-row">
+      <div><label>Date</label><input type="date" id="evDate"></div>
+      <div><label>Time</label><input type="time" id="evTime"></div>
+    </div>
+    <label>Type</label>
+    <select id="evType">
+      <option value="service">Service</option>
+      <option value="prayer">Prayer</option>
+      <option value="youth">Youth</option>
+      <option value="community">Community</option>
+      <option value="special">Special Event</option>
+    </select>
+    <label>Description</label>
+    <textarea id="evDesc" placeholder="Event details…"></textarea>
+    <label>Location</label>
+    <input id="evLoc" placeholder="Main Sanctuary / Fellowship Hall…">
+    <button class="btn btn-gold btn-full" onclick="saveEvent()">Save Event</button>
+  </div>
+</div>
+
+<!-- REQUEST EVENT (user) -->
+<div class="overlay" id="requestOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('requestOverlay')">×</button>
+    <h2>Request an Event</h2>
+    <p class="subtitle">Your request will be sent to the admin for approval</p>
+    <label>Event Title</label>
+    <input id="reqTitle" placeholder="Event name">
+    <div class="form-row">
+      <div><label>Preferred Date</label><input type="date" id="reqDate"></div>
+      <div><label>Time</label><input type="time" id="reqTime"></div>
+    </div>
+    <label>Type</label>
+    <select id="reqType">
+      <option value="service">Service</option>
+      <option value="prayer">Prayer</option>
+      <option value="youth">Youth</option>
+      <option value="community">Community</option>
+      <option value="special">Special Event</option>
+    </select>
+    <label>Description / Reason</label>
+    <textarea id="reqDesc" placeholder="Please describe the event and why you'd like to add it…"></textarea>
+    <button class="btn btn-gold btn-full" onclick="submitRequest()">Submit Request</button>
+  </div>
+</div>
+
+<!-- ADD PROGRAM -->
+<div class="overlay" id="programOverlay">
+  <div class="modal" style="max-width:560px">
+    <button class="close-btn" onclick="closeOverlay('programOverlay')">×</button>
+    <h2 id="progModalTitle">New Program</h2>
+    <p class="subtitle">Set up roles for a service</p>
+    <input type="hidden" id="progId">
+    <label>Service Title</label>
+    <input id="progTitle" placeholder="e.g. Sunday Morning Service">
+    <div class="form-row">
+      <div><label>Date</label><input type="date" id="progDate"></div>
+      <div><label>Time</label><input type="time" id="progTime"></div>
+    </div>
+    <hr class="sep">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Assign roles:</p>
+    <div id="roleFields"></div>
+    <button class="btn btn-gold btn-full" onclick="saveProgram()">Save Program</button>
+  </div>
+</div>
+
+<!-- ADD BIBLE TOPIC -->
+<div class="overlay" id="bibleOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('bibleOverlay')">×</button>
+    <h2 id="bibleModalTitle">Add Bible Topic</h2>
+    <p class="subtitle">Weekly scripture message</p>
+    <input type="hidden" id="bibleId">
+    <label>Week / Series Title</label>
+    <input id="blTitle" placeholder="e.g. Week 3 – Living by Faith">
+    <label>Scripture Reference</label>
+    <input id="blVerse" placeholder="e.g. Hebrews 11:1-6">
+    <label>Speaker Name</label>
+    <input id="blSpeaker" placeholder="Pastor / Guest Speaker">
+    <label>Speaker Role / Title</label>
+    <input id="blRole" placeholder="e.g. Lead Pastor">
+    <label>Date</label>
+    <input type="date" id="blDate">
+    <label>Message Summary</label>
+    <textarea id="blSummary" placeholder="Brief summary of the message…"></textarea>
+    <button class="btn btn-gold btn-full" onclick="saveBible()">Save Topic</button>
+  </div>
+</div>
+
+<!-- ADD SONG -->
+<div class="overlay" id="songOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('songOverlay')">×</button>
+    <h2 id="songModalTitle">Add Song</h2>
+    <p class="subtitle">Worship song details</p>
+    <input type="hidden" id="songId">
+    <label>Song Title</label>
+    <input id="sgTitle" placeholder="e.g. Great Are You Lord">
+    <label>Artist / Hymn #</label>
+    <input id="sgArtist" placeholder="e.g. All Sons & Daughters">
+    <div class="form-row">
+      <div><label>Key</label>
+        <select id="sgKey">
+          <option>A</option><option>A#/Bb</option><option>B</option><option>C</option>
+          <option>C#/Db</option><option>D</option><option>D#/Eb</option><option>E</option>
+          <option>F</option><option>F#/Gb</option><option>G</option><option>G#/Ab</option>
+        </select>
+      </div>
+      <div><label>Tempo</label>
+        <select id="sgTempo">
+          <option>Slow</option><option>Medium</option><option>Fast</option><option>Varies</option>
+        </select>
+      </div>
+    </div>
+    <label>Scheduled For</label>
+    <input type="date" id="sgDate">
+    <label>Service Slot</label>
+    <select id="sgSlot">
+      <option value="Opening">Opening</option>
+      <option value="Praise">Praise</option>
+      <option value="Worship">Worship</option>
+      <option value="Offering">Offering</option>
+      <option value="Closing">Closing</option>
+    </select>
+    <label>Notes</label>
+    <input id="sgNotes" placeholder="Transpose, arrangement notes…">
+    <button class="btn btn-gold btn-full" onclick="saveSong()">Save Song</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA STORE
+// ══════════════════════════════════════════════
+const USERS = [
+  { id:1, name:'Pastor David Lee', email:'admin@grace.church', pass:'admin123', role:'admin' },
+  { id:2, name:'Maria Santos', email:'user@grace.church',  pass:'user123',  role:'member' },
+  { id:3, name:'James Reyes',   email:'james@grace.church', pass:'pass123', role:'member' },
+];
+
+let currentUser = null;
+
+const today = new Date();
+const ymd = d => d.toISOString().split('T')[0];
+const todayStr = ymd(today);
+
+let events = [
+  { id:1, title:'Sunday Morning Worship', date: todayStr, time:'09:00', type:'service', desc:'Weekly corporate worship and sermon', loc:'Main Sanctuary' },
+  { id:2, title:'Sunday Evening Service', date: todayStr, time:'18:00', type:'service', desc:'Evening worship and study', loc:'Main Sanctuary' },
+  { id:3, title:'Wednesday Prayer Meeting', date: addDays(todayStr,3), time:'19:00', type:'prayer', desc:'Corporate prayer and intercession', loc:'Prayer Room' },
+  { id:4, title:'Youth Fellowship', date: addDays(todayStr,5), time:'15:00', type:'youth', desc:'Youth praise, games and Bible study', loc:'Fellowship Hall' },
+  { id:5, title:'Community Outreach', date: addDays(todayStr,7), time:'08:00', type:'community', desc:'Serving our neighborhood', loc:'Community Center' },
+];
+let evNextId = 6;
+
+let requests = [];
+let reqNextId = 1;
+
+const ROLES = ['Worship Leader','Pianist','Guitarist','Bassist','Drummer','Vocalist 1','Vocalist 2','Scripture Reader','Offering Coordinator','Sound Engineer','Projector Operator','Greeter'];
+let programs = [
+  { id:1, title:'Sunday Morning Service', date: todayStr, time:'09:00', roles:{
+    'Worship Leader':'Pastor David Lee','Pianist':'Grace Kim','Guitarist':'Ben Torres','Bassist':'Sam Cruz',
+    'Drummer':'Leo Reyes','Vocalist 1':'Maria Santos','Vocalist 2':'Anna Lim','Scripture Reader':'James Reyes',
+    'Offering Coordinator':'Ellen Park','Sound Engineer':'Mike Tan','Projector Operator':'Chris Ng','Greeter':'Ruth Bautista'
+  }},
+  { id:2, title:'Sunday Evening Service', date: todayStr, time:'18:00', roles:{
+    'Worship Leader':'Grace Kim','Pianist':'Grace Kim','Guitarist':'Ben Torres','Bassist':'Sam Cruz',
+    'Drummer':'Leo Reyes','Vocalist 1':'Anna Lim','Vocalist 2':'Maria Santos','Scripture Reader':'Ellen Park',
+    'Offering Coordinator':'Ruth Bautista','Sound Engineer':'Mike Tan','Projector Operator':'Chris Ng','Greeter':'James Reyes'
+  }},
+];
+let progNextId = 3;
+
+let bibleTopics = [
+  { id:1, title:'Week 1 – The God Who Sees', verse:'Genesis 16:1-14', speaker:'Pastor David Lee', role:'Lead Pastor', date: addDays(todayStr,-7), summary:'A powerful study on Hagar\'s encounter with God in the wilderness. We discover that even in our loneliest moments, God is present and calls us by name. This message encourages every heart that feels forgotten to know they are truly seen.' },
+  { id:2, title:'Week 2 – Faith Over Fear', verse:'Matthew 14:22-33', speaker:'Deacon Robert Chiu', role:'Associate Pastor', date: addDays(todayStr,0), summary:'Peter\'s walk on water teaches us the extraordinary power of keeping our eyes on Christ. When storms rage in our lives, faith keeps us above the waves. We explore what it means to step out in obedience even when the winds are contrary.' },
+];
+let bibleNextId = 3;
+
+let songs = [
+  { id:1, title:'Great Are You Lord', artist:'All Sons & Daughters', key:'D', tempo:'Medium', date: todayStr, slot:'Opening', notes:'Capo 2 for guitarist' },
+  { id:2, title:'Way Maker', artist:'Sinach', key:'G', tempo:'Medium', date: todayStr, slot:'Praise', notes:'' },
+  { id:3, title:'Oceans', artist:'Hillsong United', key:'D', tempo:'Slow', date: todayStr, slot:'Worship', notes:'Extended bridge' },
+  { id:4, title:'Doxology', artist:'Traditional', key:'G', tempo:'Medium', date: todayStr, slot:'Offering', notes:'' },
+  { id:5, title:'How Great Thou Art', artist:'Traditional', key:'Bb', tempo:'Slow', date: todayStr, slot:'Closing', notes:'Full congregation' },
+  { id:6, title:'Reckless Love', artist:'Cory Asbury', key:'A', tempo:'Medium', date: addDays(todayStr,7), slot:'Worship', notes:'' },
+];
+let songNextId = 7;
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + n);
+  return ymd(d);
+}
+
+// ══════════════════════════════════════════════
+//  NAV & PAGES
+// ══════════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const links = document.querySelectorAll('.nav-link');
+  links.forEach(l => { if(l.textContent.toLowerCase().includes(name) || (name==='admin'&&l.textContent==='Admin')) l.classList.add('active'); });
+  // refresh content
+  if(name==='calendar') renderCalendar();
+  if(name==='program') renderPrograms();
+  if(name==='bible') renderBible();
+  if(name==='songs') renderSongs();
+  if(name==='admin') renderAdmin();
+  if(name==='home') renderHome();
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+function openLogin() { openOverlay('loginOverlay'); }
+function fillDemo(e,p) { document.getElementById('loginEmail').value=e; document.getElementById('loginPass').value=p; }
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPass').value;
+  const user  = USERS.find(u => u.email===email && u.pass===pass);
+  if(!user) { document.getElementById('loginError').textContent='Invalid email or password.'; document.getElementById('loginError').style.display='block'; return; }
+  currentUser = user;
+  document.getElementById('loginError').style.display='none';
+  closeOverlay('loginOverlay');
+  updateAuthUI();
+  toast('Welcome back, '+user.name+'! 🙏','success');
+}
+
+function logout() {
+  currentUser=null;
+  updateAuthUI();
+  showPage('home');
+  toast('Signed out successfully.','info');
+}
+
+function updateAuthUI() {
+  const loggedIn = !!currentUser;
+  document.getElementById('loginBtn').style.display  = loggedIn ? 'none' : '';
+  document.getElementById('logoutBtn').style.display = loggedIn ? '' : 'none';
+  document.getElementById('userBadge').style.display = loggedIn ? '' : 'none';
+  if(loggedIn) {
+    document.getElementById('userBadgeName').textContent = currentUser.name.split(' ')[0];
+    document.getElementById('userBadgeRole').textContent = currentUser.role;
+  }
+  const isAdmin = loggedIn && currentUser.role==='admin';
+  document.getElementById('adminNavBtn').style.display = isAdmin ? '' : 'none';
+  document.getElementById('calAddBtn').style.display   = isAdmin ? '' : 'none';
+  document.getElementById('progAddBtn').style.display  = isAdmin ? '' : 'none';
+  document.getElementById('bibleAddBtn').style.display = isAdmin ? '' : 'none';
+  document.getElementById('songAddBtn').style.display  = isAdmin ? '' : 'none';
+  const isMember = loggedIn && currentUser.role==='member';
+  document.getElementById('userRequestBtn').style.display = isMember ? '' : 'none';
+}
+
+// ══════════════════════════════════════════════
+//  CALENDAR
+// ══════════════════════════════════════════════
+let calDate = new Date(today.getFullYear(), today.getMonth(), 1);
+let selectedDate = todayStr;
+
+function renderCalendar() {
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  document.getElementById('calMonthLabel').textContent = calDate.toLocaleDateString('en',{month:'long',year:'numeric'});
+  // day names
+  const dnEl = document.getElementById('calDayNames');
+  dnEl.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+  // cells
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const daysInPrev  = new Date(year,month,0).getDate();
+  const cells = document.getElementById('calCells');
+  cells.innerHTML='';
+  const totalCells = Math.ceil((firstDay+daysInMonth)/7)*7;
+  for(let i=0;i<totalCells;i++){
+    let dayNum, dateStr, otherMonth=false;
+    if(i<firstDay){ dayNum=daysInPrev-firstDay+1+i; dateStr=ymd(new Date(year,month-1,dayNum)); otherMonth=true; }
+    else if(i>=firstDay+daysInMonth){ dayNum=i-firstDay-daysInMonth+1; dateStr=ymd(new Date(year,month+1,dayNum)); otherMonth=true; }
+    else { dayNum=i-firstDay+1; dateStr=ymd(new Date(year,month,dayNum)); }
+    const hasEv = events.some(e=>e.date===dateStr);
+    const isToday = dateStr===todayStr;
+    const isSel   = dateStr===selectedDate;
+    const cls = ['cal-cell', otherMonth?'other-month':'', isToday?'today':'', hasEv&&!otherMonth?'has-event':'', isSel?'selected':''].filter(Boolean).join(' ');
+    cells.innerHTML += `<div class="${cls}" onclick="selectDate('${dateStr}')">${dayNum}</div>`;
+  }
+  renderEventsPanel();
+}
+function calNav(dir){ calDate.setMonth(calDate.getMonth()+dir); renderCalendar(); }
+function selectDate(dateStr){ selectedDate=dateStr; renderCalendar(); }
+function renderEventsPanel(){
+  const panel = document.getElementById('evPanelList');
+  const title = document.getElementById('evPanelTitle');
+  const sel = new Date(selectedDate);
+  title.textContent = sel.toLocaleDateString('en',{weekday:'long',month:'short',day:'numeric'});
+  const dayEvs = events.filter(e=>e.date===selectedDate).sort((a,b)=>a.time.localeCompare(b.time));
+  const isAdmin = currentUser?.role==='admin';
+  if(!dayEvs.length){ panel.innerHTML=`<div class="empty-state"><div class="icon">📅</div><p>No events on this day</p></div>`; return; }
+  panel.innerHTML = dayEvs.map(ev=>`
+    <div class="event-item">
+      <div class="ev-time">⏰ ${fmtTime(ev.time)} &nbsp;•&nbsp; <span class="badge badge-${typeBadge(ev.type)}">${ev.type}</span></div>
+      <div class="ev-title">${ev.title}</div>
+      <div class="ev-desc">${ev.loc||''}</div>
+      ${isAdmin?`<div class="ev-actions">
+        <button class="btn btn-outline btn-sm" onclick="openEditEvent(${ev.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEvent(${ev.id})">Delete</button>
+      </div>`:''}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  EVENTS CRUD
+// ══════════════════════════════════════════════
+function openAddEvent(){ clearEventForm(); document.getElementById('eventModalTitle').textContent='Add Event'; document.getElementById('evDate').value=selectedDate; openOverlay('eventOverlay'); }
+function openEditEvent(id){
+  const ev=events.find(e=>e.id===id); if(!ev)return;
+  document.getElementById('eventModalTitle').textContent='Edit Event';
+  document.getElementById('eventId').value=id;
+  document.getElementById('evTitle').value=ev.title;
+  document.getElementById('evDate').value=ev.date;
+  document.getElementById('evTime').value=ev.time;
+  document.getElementById('evType').value=ev.type;
+  document.getElementById('evDesc').value=ev.desc||'';
+  document.getElementById('evLoc').value=ev.loc||'';
+  openOverlay('eventOverlay');
+}
+function clearEventForm(){ ['eventId','evTitle','evDate','evTime','evDesc','evLoc'].forEach(id=>document.getElementById(id).value=''); document.getElementById('evType').value='service'; }
+function saveEvent(){
+  const id   = document.getElementById('eventId').value;
+  const data = {
+    title:document.getElementById('evTitle').value.trim(),
+    date: document.getElementById('evDate').value,
+    time: document.getElementById('evTime').value,
+    type: document.getElementById('evType').value,
+    desc: document.getElementById('evDesc').value.trim(),
+    loc:  document.getElementById('evLoc').value.trim(),
+  };
+  if(!data.title||!data.date){ toast('Please fill in required fields.','error'); return; }
+  if(id){ const ev=events.find(e=>e.id==id); Object.assign(ev,data); toast('Event updated!','success'); }
+  else { events.push({id:evNextId++,...data}); toast('Event added!','success'); }
+  closeOverlay('eventOverlay');
+  renderCalendar();
+  renderAdmin();
+}
+function deleteEvent(id){ if(!confirm('Delete this event?')) return; events=events.filter(e=>e.id!==id); renderCalendar(); renderAdmin(); toast('Event deleted.','info'); }
+
+function openRequestEvent(){ document.getElementById('reqDate').value=selectedDate; openOverlay('requestOverlay'); }
+function submitRequest(){
+  const data = {
+    id:reqNextId++,
+    title:document.getElementById('reqTitle').value.trim(),
+    date: document.getElementById('reqDate').value,
+    time: document.getElementById('reqTime').value,
+    type: document.getElementById('reqType').value,
+    desc: document.getElementById('reqDesc').value.trim(),
+    requestedBy: currentUser.name,
+    status:'pending',
+  };
+  if(!data.title||!data.date){ toast('Please fill in required fields.','error'); return; }
+  requests.push(data);
+  ['reqTitle','reqDate','reqTime','reqDesc'].forEach(id=>document.getElementById(id).value='');
+  closeOverlay('requestOverlay');
+  toast('Request submitted! Admin will review it. 🙏','success');
+}
+
+// ══════════════════════════════════════════════
+//  PROGRAMS
+// ══════════════════════════════════════════════
+let selectedProgId = programs[0]?.id || null;
+
+function renderPrograms(){
+  const tabs = document.getElementById('programTabs');
+  tabs.innerHTML = programs.map(p=>`<button class="prog-tab ${p.id===selectedProgId?'active':''}" onclick="selectProg(${p.id})">${p.title}<br><small style="color:var(--muted)">${fmtDate(p.date)}</small></button>`).join('');
+  const content = document.getElementById('programContent');
+  const prog = programs.find(p=>p.id===selectedProgId);
+  if(!prog){ content.innerHTML=`<div class="empty-state"><div class="icon">📋</div><p>No programs yet</p></div>`; return; }
+  const isAdmin = currentUser?.role==='admin';
+  content.innerHTML=`
+    <div class="program-card">
+      <div class="prog-header">
+        <div>
+          <div class="prog-title">${prog.title}</div>
+          <div class="prog-date">${fmtDate(prog.date)} &nbsp;•&nbsp; ${fmtTime(prog.time)}</div>
+        </div>
+        ${isAdmin?`<div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="openEditProgram(${prog.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteProgram(${prog.id})">Delete</button></div>`:''}
+      </div>
+      <div class="role-list">
+        ${ROLES.map(r=>`
+          <div class="role-row">
+            <div class="role-name">${r}</div>
+            <div class="role-person">${prog.roles[r]||'<span style="color:var(--muted);font-style:italic">Unassigned</span>'}</div>
+            ${isAdmin?`<div class="role-actions"><button class="btn btn-outline btn-sm" onclick="promptRole(${prog.id},'${r}')">Assign</button></div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function selectProg(id){ selectedProgId=id; renderPrograms(); }
+function openAddProgram(){
+  document.getElementById('progModalTitle').textContent='New Program';
+  document.getElementById('progId').value='';
+  document.getElementById('progTitle').value='';
+  document.getElementById('progDate').value=todayStr;
+  document.getElementById('progTime').value='09:00';
+  buildRoleFields({});
+  openOverlay('programOverlay');
+}
+function openEditProgram(id){
+  const p=programs.find(x=>x.id===id); if(!p)return;
+  document.getElementById('progModalTitle').textContent='Edit Program';
+  document.getElementById('progId').value=id;
+  document.getElementById('progTitle').value=p.title;
+  document.getElementById('progDate').value=p.date;
+  document.getElementById('progTime').value=p.time;
+  buildRoleFields(p.roles);
+  openOverlay('programOverlay');
+}
+function buildRoleFields(existing){
+  document.getElementById('roleFields').innerHTML = ROLES.map(r=>`
+    <div style="display:grid;grid-template-columns:160px 1fr;gap:8px;margin-bottom:10px;align-items:center">
+      <label style="text-transform:none;font-size:.85rem;color:var(--text);margin:0">${r}</label>
+      <input data-role="${r}" value="${existing[r]||''}" placeholder="Name…" style="margin:0">
+    </div>`).join('');
+}
+function saveProgram(){
+  const id = document.getElementById('progId').value;
+  const roles = {};
+  document.querySelectorAll('#roleFields input[data-role]').forEach(inp=>{ if(inp.value.trim()) roles[inp.dataset.role]=inp.value.trim(); });
+  const data = { title:document.getElementById('progTitle').value.trim(), date:document.getElementById('progDate').value, time:document.getElementById('progTime').value, roles };
+  if(!data.title||!data.date){ toast('Please fill in required fields.','error'); return; }
+  if(id){ const p=programs.find(x=>x.id==id); Object.assign(p,data); toast('Program updated!','success'); }
+  else { const np={id:progNextId++,...data}; programs.push(np); selectedProgId=np.id; toast('Program created!','success'); }
+  closeOverlay('programOverlay');
+  renderPrograms();
+}
+function deleteProgram(id){ if(!confirm('Delete this program?'))return; programs=programs.filter(p=>p.id!==id); selectedProgId=programs[0]?.id||null; renderPrograms(); toast('Program deleted.','info'); }
+function promptRole(progId, role){
+  const p=programs.find(x=>x.id===progId); if(!p)return;
+  const name = prompt(`Assign "${role}" to:`, p.roles[role]||'');
+  if(name===null)return;
+  if(name.trim()) p.roles[role]=name.trim(); else delete p.roles[role];
+  renderPrograms();
+  toast(`${role} updated.`,'success');
+}
+
+// ══════════════════════════════════════════════
+//  BIBLE TOPICS
+// ══════════════════════════════════════════════
+function renderBible(){
+  const list = document.getElementById('bibleList');
+  const isAdmin = currentUser?.role==='admin';
+  if(!bibleTopics.length){ list.innerHTML=`<div class="empty-state"><div class="icon">📖</div><p>No topics added yet</p></div>`; return; }
+  list.innerHTML = [...bibleTopics].reverse().map(t=>`
+    <div class="bible-card">
+      <div class="week-label">✦ ${fmtDate(t.date)}</div>
+      <h3>${t.title}</h3>
+      <div class="verse-ref">📖 ${t.verse}</div>
+      <p>${t.summary}</p>
+      <div class="speaker">
+        <div class="speaker-avatar">${t.speaker.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+        <div class="speaker-info"><div class="name">${t.speaker}</div><div class="title">${t.role}</div></div>
+        ${isAdmin?`<div style="margin-left:auto;display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="openEditBible(${t.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteBible(${t.id})">Delete</button></div>`:''}
+      </div>
+    </div>`).join('');
+}
+function openAddBible(){ clearBibleForm(); document.getElementById('bibleModalTitle').textContent='Add Bible Topic'; document.getElementById('blDate').value=todayStr; openOverlay('bibleOverlay'); }
+function openEditBible(id){
+  const t=bibleTopics.find(x=>x.id===id); if(!t)return;
+  document.getElementById('bibleModalTitle').textContent='Edit Bible Topic';
+  document.getElementById('bibleId').value=id;
+  document.getElementById('blTitle').value=t.title;
+  document.getElementById('blVerse').value=t.verse;
+  document.getElementById('blSpeaker').value=t.speaker;
+  document.getElementById('blRole').value=t.role;
+  document.getElementById('blDate').value=t.date;
+  document.getElementById('blSummary').value=t.summary;
+  openOverlay('bibleOverlay');
+}
+function clearBibleForm(){ ['bibleId','blTitle','blVerse','blSpeaker','blRole','blDate','blSummary'].forEach(id=>document.getElementById(id).value=''); }
+function saveBible(){
+  const id = document.getElementById('bibleId').value;
+  const data = { title:document.getElementById('blTitle').value.trim(), verse:document.getElementById('blVerse').value.trim(), speaker:document.getElementById('blSpeaker').value.trim(), role:document.getElementById('blRole').value.trim(), date:document.getElementById('blDate').value, summary:document.getElementById('blSummary').value.trim() };
+  if(!data.title||!data.verse){ toast('Please fill required fields.','error'); return; }
+  if(id){ const t=bibleTopics.find(x=>x.id==id); Object.assign(t,data); toast('Topic updated!','success'); }
+  else { bibleTopics.push({id:bibleNextId++,...data}); toast('Topic added!','success'); }
+  closeOverlay('bibleOverlay');
+  renderBible();
+}
+function deleteBible(id){ if(!confirm('Delete this topic?'))return; bibleTopics=bibleTopics.filter(x=>x.id!==id); renderBible(); toast('Topic deleted.','info'); }
+
+// ══════════════════════════════════════════════
+//  SONGS
+// ══════════════════════════════════════════════
+function renderSongs(){
+  const grid = document.getElementById('songGrid');
+  const isAdmin = currentUser?.role==='admin';
+  if(!songs.length){ grid.innerHTML=`<div class="empty-state"><div class="icon">🎵</div><p>No songs added yet</p></div>`; return; }
+  const slotColors = {Opening:'gold',Praise:'gold',Worship:'blue',Offering:'purple',Closing:'green'};
+  grid.innerHTML = songs.map(s=>`
+    <div class="song-card">
+      <div class="song-num"><span class="badge badge-${slotColors[s.slot]||'gold'}">${s.slot}</span> &nbsp; Key: ${s.key} &nbsp; ${s.tempo}</div>
+      <h4>${s.title}</h4>
+      <div class="song-key">🎤 ${s.artist}</div>
+      <div class="song-schedule">📅 ${fmtDate(s.date)}</div>
+      ${s.notes?`<div style="font-size:.78rem;color:var(--muted);font-style:italic">📝 ${s.notes}</div>`:''}
+      ${isAdmin?`<div class="song-actions">
+        <button class="btn btn-outline btn-sm" onclick="openEditSong(${s.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSong(${s.id})">Delete</button>
+      </div>`:''}
+    </div>`).join('');
+}
+function openAddSong(){ clearSongForm(); document.getElementById('songModalTitle').textContent='Add Song'; document.getElementById('sgDate').value=todayStr; openOverlay('songOverlay'); }
+function openEditSong(id){
+  const s=songs.find(x=>x.id===id); if(!s)return;
+  document.getElementById('songModalTitle').textContent='Edit Song';
+  document.getElementById('songId').value=id;
+  document.getElementById('sgTitle').value=s.title;
+  document.getElementById('sgArtist').value=s.artist;
+  document.getElementById('sgKey').value=s.key;
+  document.getElementById('sgTempo').value=s.tempo;
+  document.getElementById('sgDate').value=s.date;
+  document.getElementById('sgSlot').value=s.slot;
+  document.getElementById('sgNotes').value=s.notes;
+  openOverlay('songOverlay');
+}
+function clearSongForm(){ ['songId','sgTitle','sgArtist','sgNotes','sgDate'].forEach(id=>document.getElementById(id).value=''); }
+function saveSong(){
+  const id = document.getElementById('songId').value;
+  const data = { title:document.getElementById('sgTitle').value.trim(), artist:document.getElementById('sgArtist').value.trim(), key:document.getElementById('sgKey').value, tempo:document.getElementById('sgTempo').value, date:document.getElementById('sgDate').value, slot:document.getElementById('sgSlot').value, notes:document.getElementById('sgNotes').value.trim() };
+  if(!data.title){ toast('Please enter a song title.','error'); return; }
+  if(id){ const s=songs.find(x=>x.id==id); Object.assign(s,data); toast('Song updated!','success'); }
+  else { songs.push({id:songNextId++,...data}); toast('Song added!','success'); }
+  closeOverlay('songOverlay');
+  renderSongs();
+}
+function deleteSong(id){ if(!confirm('Delete this song?'))return; songs=songs.filter(x=>x.id!==id); renderSongs(); toast('Song deleted.','info'); }
+
+// ══════════════════════════════════════════════
+//  ADMIN PANEL
+// ══════════════════════════════════════════════
+let adminTab = 'events';
+function switchAdmin(tab){
+  adminTab=tab;
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('admin-'+tab).classList.add('active');
+  renderAdmin();
+}
+function renderAdmin(){
+  if(!currentUser||currentUser.role!=='admin') return;
+  // events table
+  const tbody = document.getElementById('adminEventsTbody');
+  tbody.innerHTML = events.sort((a,b)=>a.date.localeCompare(b.date)).map(ev=>`
+    <tr>
+      <td>${fmtDate(ev.date)}</td>
+      <td><strong>${ev.title}</strong><br><small style="color:var(--muted)">${ev.loc||''}</small></td>
+      <td>${fmtTime(ev.time)}</td>
+      <td><span class="badge badge-${typeBadge(ev.type)}">${ev.type}</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="openEditEvent(${ev.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEvent(${ev.id})">Delete</button>
+      </div></td>
+    </tr>`).join('');
+  
+  // requests
+  const reqList = document.getElementById('adminRequestsList');
+  const pending = requests.filter(r=>r.status==='pending');
+  if(!pending.length){ reqList.innerHTML=`<div class="empty-state"><div class="icon">✅</div><p>No pending requests</p></div>`; }
+  else { reqList.innerHTML=pending.map(r=>`
+    <div class="event-item" style="margin-bottom:12px">
+      <div class="ev-time">From: <strong>${r.requestedBy}</strong> &nbsp;•&nbsp; <span class="badge badge-blue">${r.type}</span> &nbsp;•&nbsp; ${fmtDate(r.date)} ${fmtTime(r.time)}</div>
+      <div class="ev-title">${r.title}</div>
+      <div class="ev-desc">${r.desc}</div>
+      <div class="ev-actions" style="margin-top:10px">
+        <button class="btn btn-gold btn-sm" onclick="approveRequest(${r.id})">✓ Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectRequest(${r.id})">✗ Reject</button>
+      </div>
+    </div>`).join('');}
+  
+  // programs list
+  const progList = document.getElementById('adminProgramsList');
+  progList.innerHTML = programs.map(p=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold)">${p.title}</div>
+        <div style="font-size:.83rem;color:var(--muted)">${fmtDate(p.date)} &nbsp;•&nbsp; ${fmtTime(p.time)} &nbsp;•&nbsp; ${Object.keys(p.roles).length} roles assigned</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="selectProg(${p.id});showPage('program')">View</button>
+        <button class="btn btn-outline btn-sm" onclick="openEditProgram(${p.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProgram(${p.id})">Delete</button>
+      </div>
+    </div>`).join('');
+  
+  // users table
+  const utbody = document.getElementById('adminUsersTbody');
+  utbody.innerHTML = USERS.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-gold':'badge-blue'}">${u.role}</span></td>
+    </tr>`).join('');
+}
+function approveRequest(id){
+  const r=requests.find(x=>x.id===id); if(!r)return;
+  r.status='approved';
+  events.push({id:evNextId++, title:r.title, date:r.date, time:r.time, type:r.type, desc:r.desc+' [Requested by '+r.requestedBy+']', loc:''});
+  renderAdmin(); renderCalendar();
+  toast(`Request "${r.title}" approved & added to calendar! ✅`,'success');
+}
+function rejectRequest(id){
+  const r=requests.find(x=>x.id===id); if(!r)return;
+  r.status='rejected';
+  renderAdmin();
+  toast('Request rejected.','info');
+}
+
+// ══════════════════════════════════════════════
+//  HOME SUMMARY
+// ══════════════════════════════════════════════
+function renderHome(){
+  const el = document.getElementById('homeWeekSummary');
+  // this week's events
+  const weekStart = new Date(today); weekStart.setDate(today.getDate()-today.getDay());
+  const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate()+6);
+  const weekEvs   = events.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<=weekEnd; }).slice(0,4);
+  const topic     = bibleTopics[bibleTopics.length-1];
+  el.innerHTML = weekEvs.map(ev=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">${fmtDate(ev.date)} &nbsp;•&nbsp; ${fmtTime(ev.time)}</div>
+      <div style="font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold);margin-bottom:6px">${ev.title}</div>
+      <div style="font-size:.85rem;color:var(--muted)">${ev.loc||ev.desc}</div>
+    </div>`).join('') + (topic?`
+    <div style="background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(74,144,217,.06));border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:20px">
+      <div style="font-size:.75rem;color:var(--gold);margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em">This Week's Message</div>
+      <div style="font-family:'Cinzel',serif;font-size:.95rem;margin-bottom:6px">${topic.title}</div>
+      <div style="font-size:.85rem;color:var(--accent);font-style:italic;margin-bottom:8px">${topic.verse}</div>
+      <div style="font-size:.82rem;color:var(--muted)">${topic.speaker} &nbsp;•&nbsp; ${topic.role}</div>
+    </div>`:'');
+}
+
+// ══════════════════════════════════════════════
+//  OVERLAY HELPERS
+// ══════════════════════════════════════════════
+function openOverlay(id){ document.getElementById(id).classList.add('active'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('active'); }));
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+let toastTimer;
+function toast(msg, type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3200);
+}
+
+// ══════════════════════════════════════════════
+//  FORMAT HELPERS
+// ══════════════════════════════════════════════
+function fmtDate(str){ if(!str)return''; const d=new Date(str+'T00:00:00'); return d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
+function fmtTime(t){ if(!t)return''; const [h,m]=t.split(':'); const hr=+h; return `${hr%12||12}:${m} ${hr<12?'AM':'PM'}`; }
+function typeBadge(type){ return {service:'gold',prayer:'blue',youth:'green',community:'purple',special:'red'}[type]||'gold'; }
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+renderCalendar();
+renderHome();
+</script>
+</body>
+</html>
 
